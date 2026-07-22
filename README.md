@@ -168,10 +168,7 @@ docker compose up -d --build
 
 ## 验证资料
 
-- V2 需求：[docs/测试需求分析.md](docs/测试需求分析.md)
-- 测试点：[docs/测试点分析.md](docs/测试点分析.md)
 - 测试点脑图：[docs/电商订单管理系统.xmind](docs/电商订单管理系统.xmind)
-- 测试计划：[docs/测试计划.md](docs/测试计划.md)
 - 功能测试用例：[docs/电商订单管理系统测试用例.xlsx](docs/电商订单管理系统测试用例.xlsx)
 - 接口测试用例：[docs/接口测试用例.xlsx](docs/接口测试用例.xlsx)
 - 缺陷记录：[docs/缺陷用例.xlsx](docs/缺陷用例.xlsx)
