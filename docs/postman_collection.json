@@ -1,0 +1,244 @@
+{
+  "info": {
+    "name": "mall-test-system V2 API",
+    "description": "与 V2 实际接口一致的 Postman Collection。先分别执行普通用户登录和管理员登录以写入 token。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "addressId", "value": "1" },
+    { "key": "cartId", "value": "1" },
+    { "key": "orderId", "value": "1" },
+    { "key": "adminOrderId", "value": "2" },
+    { "key": "productId", "value": "1" },
+    { "key": "userId", "value": "3" }
+  ],
+  "item": [
+    {
+      "name": "认证与当前用户",
+      "item": [
+        {
+          "name": "普通用户登录",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (pm.response.code === 200 && json.code === 200) pm.collectionVariables.set('userToken', json.data.token);"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"user\",\n  \"password\": \"123456\"\n}" },
+            "url": "{{baseUrl}}/api/login"
+          }
+        },
+        {
+          "name": "管理员登录",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const json = pm.response.json();",
+              "if (pm.response.code === 200 && json.code === 200) pm.collectionVariables.set('adminToken', json.data.token);"
+            ] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}" },
+            "url": "{{baseUrl}}/api/login"
+          }
+        },
+        {
+          "name": "禁用用户登录",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"disabled_user\",\n  \"password\": \"123456\"\n}" },
+            "url": "{{baseUrl}}/api/login"
+          }
+        },
+        {
+          "name": "注册普通用户",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"password\": \"123456\"\n}" },
+            "url": "{{baseUrl}}/api/register"
+          }
+        },
+        {
+          "name": "当前用户",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+            "url": "{{baseUrl}}/api/user/current"
+          }
+        }
+      ]
+    },
+    {
+      "name": "收货地址",
+      "item": [
+        {
+          "name": "地址列表",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses" }
+        },
+        {
+          "name": "新增地址",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"recipientName\": \"Postman收货人\",\n  \"phone\": \"13800000009\",\n  \"province\": \"广东省\",\n  \"city\": \"深圳市\",\n  \"district\": \"南山区\",\n  \"detailAddress\": \"测试路 9 号 901\",\n  \"isDefault\": false\n}" },
+            "url": "{{baseUrl}}/api/addresses"
+          }
+        },
+        {
+          "name": "修改地址",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"recipientName\": \"测试用户\",\n  \"phone\": \"13800000001\",\n  \"province\": \"广东省\",\n  \"city\": \"深圳市\",\n  \"district\": \"南山区\",\n  \"detailAddress\": \"科技园测试路 100 号 A 座 801\",\n  \"isDefault\": true\n}" },
+            "url": "{{baseUrl}}/api/addresses/{{addressId}}"
+          }
+        },
+        {
+          "name": "设置默认地址",
+          "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses/{{addressId}}/default" }
+        },
+        {
+          "name": "删除地址",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses/{{addressId}}" }
+        }
+      ]
+    },
+    {
+      "name": "商品",
+      "item": [
+        { "name": "前台商品分页", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/products?keyword=&category=&page=1&size=8" } },
+        { "name": "前台商品详情", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/products/{{productId}}" } },
+        { "name": "管理员商品分页", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/products?keyword=&category=&status=&page=1&size=8" } },
+        {
+          "name": "管理员新增商品",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Postman测试商品\",\n  \"price\": 99.90,\n  \"stock\": 10,\n  \"category\": \"配件\",\n  \"status\": \"ON_SALE\",\n  \"imageUrl\": \"https://picsum.photos/seed/postman/480/320\",\n  \"description\": \"接口测试商品\"\n}" },
+            "url": "{{baseUrl}}/api/admin/products"
+          }
+        },
+        {
+          "name": "管理员修改商品",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"智能手机 X1\",\n  \"price\": 2999.00,\n  \"stock\": 35,\n  \"category\": \"手机\",\n  \"status\": \"ON_SALE\",\n  \"imageUrl\": \"https://picsum.photos/seed/mall-phone-x1/480/320\",\n  \"description\": \"正常库存商品\"\n}" },
+            "url": "{{baseUrl}}/api/admin/products/{{productId}}"
+          }
+        },
+        {
+          "name": "管理员修改商品状态",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"OFF_SHELF\"\n}" },
+            "url": "{{baseUrl}}/api/admin/products/{{productId}}/status"
+          }
+        },
+        {
+          "name": "管理员修改库存",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"stock\": 20\n}" },
+            "url": "{{baseUrl}}/api/admin/products/{{productId}}/stock"
+          }
+        },
+        { "name": "管理员软删除商品", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/products/{{productId}}" } }
+      ]
+    },
+    {
+      "name": "购物车",
+      "item": [
+        {
+          "name": "加入购物车",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 1\n}" },
+            "url": "{{baseUrl}}/api/cart"
+          }
+        },
+        { "name": "购物车列表", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/cart" } },
+        {
+          "name": "修改购物车数量",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 2\n}" },
+            "url": "{{baseUrl}}/api/cart/{{cartId}}"
+          }
+        },
+        { "name": "删除购物车条目", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/cart/{{cartId}}" } }
+      ]
+    },
+    {
+      "name": "用户订单",
+      "item": [
+        {
+          "name": "创建订单",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cartIds\": [{{cartId}}],\n  \"addressId\": {{addressId}}\n}" },
+            "url": "{{baseUrl}}/api/orders"
+          }
+        },
+        { "name": "订单分页与状态筛选", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders?status=&page=1&size=10" } },
+        { "name": "订单详情与时间线", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}" } },
+        { "name": "支付订单", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}/pay" } },
+        { "name": "取消订单", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}" } },
+        { "name": "确认收货", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}/confirm-receipt" } }
+      ]
+    },
+    {
+      "name": "管理员订单",
+      "item": [
+        { "name": "组合查询订单", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/orders?orderNo=&username=&status=&startTime=&endTime=&page=1&size=10" } },
+        { "name": "管理员订单详情", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/orders/{{adminOrderId}}" } },
+        {
+          "name": "管理员发货",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"shippingCompany\": \"顺丰速运\",\n  \"trackingNumber\": \"SF1000000002\"\n}" },
+            "url": "{{baseUrl}}/api/admin/orders/{{adminOrderId}}/ship"
+          }
+        }
+      ]
+    },
+    {
+      "name": "管理员用户",
+      "item": [
+        { "name": "普通用户分页", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/users?username=&status=&page=1&size=10" } },
+        {
+          "name": "启用或禁用用户",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"ACTIVE\"\n}" },
+            "url": "{{baseUrl}}/api/admin/users/{{userId}}/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "统计",
+      "item": [
+        { "name": "当前角色统计", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/statistics" } }
+      ]
+    }
+  ]
+}

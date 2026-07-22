@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+dist/
+target/
+.vite/
+.pnpm-store/
+
+# Local runtime data and logs
+.workbench/
+*.log
+*.pid
+hs_err_pid*
+
+# Secrets and local environment overrides
+.env
+.env.*
+!.env.example
+
+# IDE and operating system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.old
+*~
+
+# Database backups (keep versioned schema/migrations under sql/)
+*.sql
+!sql/
+!sql/**
+*.nb3
+*.dump
+backup/
+backups/
