@@ -1,244 +1,1865 @@
 {
   "info": {
-    "name": "mall-test-system V2 API",
-    "description": "与 V2 实际接口一致的 Postman Collection。先分别执行普通用户登录和管理员登录以写入 token。",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "9b62571c-c587-4458-bcf8-d70640cef96c",
+    "name": "电商订单管理系统",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56405643",
+    "_collection_link": "https://go.postman.co/collection/56405643-9b62571c-c587-4458-bcf8-d70640cef96c?source=collection_link"
   },
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080" },
-    { "key": "userToken", "value": "" },
-    { "key": "adminToken", "value": "" },
-    { "key": "addressId", "value": "1" },
-    { "key": "cartId", "value": "1" },
-    { "key": "orderId", "value": "1" },
-    { "key": "adminOrderId", "value": "2" },
-    { "key": "productId", "value": "1" },
-    { "key": "userId", "value": "3" }
-  ],
   "item": [
     {
-      "name": "认证与当前用户",
+      "name": "登录与注册",
       "item": [
         {
-          "name": "普通用户登录",
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "const json = pm.response.json();",
-              "if (pm.response.code === 200 && json.code === 200) pm.collectionVariables.set('userToken', json.data.token);"
-            ] }
-          }],
+          "name": "使用正确账号密码登录",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 检查状态码\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "//检查整体body\r",
+                  "//pm.test(\"body中有没有包含这个数据\", function () {\r",
+                  "//    pm.response.to.have.body(message);\r",
+                  "//});\r",
+                  "// 检查响应当中是否包含该字符\r",
+                  "pm.test(\"检查响应是否包含这个数据\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.include(\"success\");\r",
+                  "});\r",
+                  "// 检查对应字段对不对\r",
+                  "//pm.test(\"检查对应字段对不对\", function () {\r",
+                  "    //var jsonData = pm.response.json();\r",
+                  "   //pm.expect(jsonData.code).to.eql(200);\r",
+                  "   //多层次需要一层一层访问\r",
+                  "   //pm.expect(jsonData.data.user.id).to.eql(4);\r",
+                  "//});\r",
+                  "\r",
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"HTTP状态码为200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"管理员登录成功\", function () {\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.token).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(res.data.user.username).to.eql(\"admin\");\r",
+                  "    pm.expect(res.data.user.role).to.eql(\"ADMIN\");\r",
+                  "});\r",
+                  "\r",
+                  "if (res.code === 200 && res.data && res.data.token) {\r",
+                  "    pm.environment.set(\"atoken\", res.data.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"username\": \"user\",\n  \"password\": \"123456\"\n}" },
-            "url": "{{baseUrl}}/api/login"
-          }
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "管理员登录",
-          "event": [{
-            "listen": "test",
-            "script": { "exec": [
-              "const json = pm.response.json();",
-              "if (pm.response.code === 200 && json.code === 200) pm.collectionVariables.set('adminToken', json.data.token);"
-            ] }
-          }],
+          "name": "普通用户token变量",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"普通用户登录成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.token).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(res.data.user.username).to.eql(\"user\");\r",
+                  "    pm.expect(res.data.user.role).to.eql(\"USER\");\r",
+                  "});\r",
+                  "\r",
+                  "if (res.code === 200 && res.data && res.data.token) {\r",
+                  "    pm.environment.set(\"utoken\", res.data.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}" },
-            "url": "{{baseUrl}}/api/login"
-          }
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"user\",\r\n    \"password\":\"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "禁用用户登录",
+          "name": "密码填写错误",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "pm.test(\"Status code is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    pm.expect(res.code).to.eql(400);\r",
+                  "    pm.expect(res.message).to.eql(\"用户名或密码错误\");\r",
+                  "    pm.expect(res.data).to.eql(null);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"username\": \"disabled_user\",\n  \"password\": \"123456\"\n}" },
-            "url": "{{baseUrl}}/api/login"
-          }
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"user\",\r\n    \"password\":\"1234567\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "注册普通用户",
+          "name": "使用不存在的用户名登录",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"username\": \"postman_user\",\n  \"password\": \"123456\"\n}" },
-            "url": "{{baseUrl}}/api/register"
-          }
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"ywyy\",\r\n    \"password\":\"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "当前用户",
+          "name": "用户名为空",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"\",\"password\":\"123456\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "填写正确数据注册新用户",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"ywy\",\r\n    \"password\":\"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/register",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "携带有效 token 查询当前用户",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
-            "url": "{{baseUrl}}/api/user/current"
-          }
-        }
-      ]
-    },
-    {
-      "name": "收货地址",
-      "item": [
-        {
-          "name": "地址列表",
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses" }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"ywd\",\r\n    \"password\":\"123456\"\r\n}"
+            },
+            "url": {
+              "raw": "{{url}}/api/user/current",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "current"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "新增地址",
+          "name": "不带 token 查询当前用户",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"未登录返回401\", function () {\r",
+                  "    pm.response.to.have.status(401);\r",
+                  "    pm.expect(res.code).to.eql(401);\r",
+                  "    pm.expect(res.message).to.eql(\"未登录或 token 缺失\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"recipientName\": \"Postman收货人\",\n  \"phone\": \"13800000009\",\n  \"province\": \"广东省\",\n  \"city\": \"深圳市\",\n  \"district\": \"南山区\",\n  \"detailAddress\": \"测试路 9 号 901\",\n  \"isDefault\": false\n}" },
-            "url": "{{baseUrl}}/api/addresses"
-          }
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/user/current",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "current"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "修改地址",
+          "name": "使用无效 token 查询当前用户",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
-            "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"recipientName\": \"测试用户\",\n  \"phone\": \"13800000001\",\n  \"province\": \"广东省\",\n  \"city\": \"深圳市\",\n  \"district\": \"南山区\",\n  \"detailAddress\": \"科技园测试路 100 号 A 座 801\",\n  \"isDefault\": true\n}" },
-            "url": "{{baseUrl}}/api/addresses/{{addressId}}"
-          }
-        },
-        {
-          "name": "设置默认地址",
-          "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses/{{addressId}}/default" }
-        },
-        {
-          "name": "删除地址",
-          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/addresses/{{addressId}}" }
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer 111",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"ywd\",\r\n    \"password\":\"123456\"\r\n}"
+            },
+            "url": {
+              "raw": "{{url}}/api/user/current",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "current"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
       "name": "商品",
       "item": [
-        { "name": "前台商品分页", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/products?keyword=&category=&page=1&size=8" } },
-        { "name": "前台商品详情", "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/products/{{productId}}" } },
-        { "name": "管理员商品分页", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/products?keyword=&category=&status=&page=1&size=8" } },
         {
-          "name": "管理员新增商品",
+          "name": "查询第一页在售商品",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"商品列表查询成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.records).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"列表只包含在售商品\", function () {\r",
+                  "    const allOnSale = res.data.records.every(function (product) {\r",
+                  "        return product.status === \"ON_SALE\";\r",
+                  "    });\r",
+                  "    pm.expect(allOnSale).to.be.true;\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/products?page=1&size=8",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "查询存在的商品详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/products/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "查询不存在的商品",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"商品不存在返回404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "    pm.expect(res.code).to.eql(404);\r",
+                  "    pm.expect(res.message).to.include(\"商品不存在\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/products/99999",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "管理员查询全部未删除商品",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/admin/products?page=1&size=8",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "普通用户访问后台商品列表",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"普通用户访问后台返回403\", function () {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "    pm.expect(res.code).to.eql(403);\r",
+                  "    pm.expect(res.message).to.eql(\"普通用户不能访问管理员接口\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/admin/products?page=1&size=8",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "size",
+                  "value": "8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "新增一件正常商品",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Postman测试商品\",\n  \"price\": 99.90,\n  \"stock\": 10,\n  \"category\": \"配件\",\n  \"status\": \"ON_SALE\",\n  \"imageUrl\": \"https://picsum.photos/seed/postman/480/320\",\n  \"description\": \"接口测试商品\"\n}" },
-            "url": "{{baseUrl}}/api/admin/products"
-          }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"接口测试商品\",\r\n\"price\":99.9,\r\n\"stock\":10,\r\n\"category\":\"配件\",\r\n\"status\":\"ON_SALE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "管理员修改商品",
+          "name": "商品价格填写 0",
           "request": {
-            "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"智能手机 X1\",\n  \"price\": 2999.00,\n  \"stock\": 35,\n  \"category\": \"手机\",\n  \"status\": \"ON_SALE\",\n  \"imageUrl\": \"https://picsum.photos/seed/mall-phone-x1/480/320\",\n  \"description\": \"正常库存商品\"\n}" },
-            "url": "{{baseUrl}}/api/admin/products/{{productId}}"
-          }
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"零价商品\",\"price\":0,\"stock\":10,\"category\":\"配件\",\"status\":\"ON_SALE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "管理员修改商品状态",
+          "name": "商品价格填写负数",
           "request": {
-            "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"status\": \"OFF_SHELF\"\n}" },
-            "url": "{{baseUrl}}/api/admin/products/{{productId}}/status"
-          }
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"负价商品\",\"price\":-1,\"stock\":10,\"category\":\"配件\",\"status\":\"ON_SALE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "管理员修改库存",
+          "name": "商品库存填写负数",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"负库存商品\",\"price\":99.9,\"stock\":-1,\"category\":\"配件\",\"status\":\"ON_SALE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "修改商品名称、价格和库存",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"stock\": 20\n}" },
-            "url": "{{baseUrl}}/api/admin/products/{{productId}}/stock"
-          }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"接口测试商品-修改\",\"price\":109.9,\"stock\":20,\"category\":\"配件\",\"status\":\"ON_SALE\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products/14",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "14"
+              ]
+            }
+          },
+          "response": []
         },
-        { "name": "管理员软删除商品", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/products/{{productId}}" } }
+        {
+          "name": "将商品状态改为下架",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"stock\":0}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products/14/stock",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "14",
+                "stock"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "将商品库存修改为 0",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"stock\":0}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products/14/stock",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "14",
+                "stock"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "管理员删除商品",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"接口测试商品-修改\",\"price\":109.9,\"stock\":20,\"category\":\"配件\",\"status\":\"ON_SALE\"}"
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/products/15",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "15"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "地址",
+      "item": [
+        {
+          "name": "查询当前用户的收货地址",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/addresses",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "新增第一条地址时不勾选默认",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"测试用户\",\"phone\":\"13800000008\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"南山区\",\"detailAddress\":\"测试路 8 号\",\"isDefault\":false}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "修改自己的收货地址",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "修改其他用户的地址",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses/5",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "将地址 2 设为默认地址",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}"
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses/2/default",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "2",
+                "default"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除默认地址",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}"
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除其他用户的地址",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}"
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses/5",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
       ]
     },
     {
       "name": "购物车",
       "item": [
         {
-          "name": "加入购物车",
+          "name": "正常加入购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"加入购物车成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  " \r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 1\n}" },
-            "url": "{{baseUrl}}/api/cart"
-          }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\":1,\"quantity\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
         },
-        { "name": "购物车列表", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/cart" } },
         {
-          "name": "修改购物车数量",
+          "name": "零库存商品加入购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"库存不足返回400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    pm.expect(res.code).to.eql(400);\r",
+                  "    pm.expect(res.message).to.include(\"库存不足\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\":4,\"quantity\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "下架商品加入购物车",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\":12,\"quantity\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "加入数量超过库存",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\":7,\"quantity\":3}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "查询当前用户购物车",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "将购物车商品数量改为 2",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 2\n}" },
-            "url": "{{baseUrl}}/api/cart/{{cartId}}"
-          }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quantity\":2}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart/3",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "3"
+              ]
+            }
+          },
+          "response": []
         },
-        { "name": "删除购物车条目", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/cart/{{cartId}}" } }
-      ]
-    },
-    {
-      "name": "用户订单",
-      "item": [
         {
-          "name": "创建订单",
+          "name": "删除购物车中的商品",
           "request": {
-            "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"cartIds\": [{{cartId}}],\n  \"addressId\": {{addressId}}\n}" },
-            "url": "{{baseUrl}}/api/orders"
-          }
-        },
-        { "name": "订单分页与状态筛选", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders?status=&page=1&size=10" } },
-        { "name": "订单详情与时间线", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}" } },
-        { "name": "支付订单", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}/pay" } },
-        { "name": "取消订单", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}" } },
-        { "name": "确认收货", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}/confirm-receipt" } }
-      ]
-    },
-    {
-      "name": "管理员订单",
-      "item": [
-        { "name": "组合查询订单", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/orders?orderNo=&username=&status=&startTime=&endTime=&page=1&size=10" } },
-        { "name": "管理员订单详情", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/orders/{{adminOrderId}}" } },
-        {
-          "name": "管理员发货",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"shippingCompany\": \"顺丰速运\",\n  \"trackingNumber\": \"SF1000000002\"\n}" },
-            "url": "{{baseUrl}}/api/admin/orders/{{adminOrderId}}/ship"
-          }
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/cart/3",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "3"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "管理员用户",
+      "name": "订单",
       "item": [
-        { "name": "普通用户分页", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/api/admin/users?username=&status=&page=1&size=10" } },
         {
-          "name": "启用或禁用用户",
+          "name": "选择购物车商品创建订单",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
-            "method": "PUT",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"status\": \"ACTIVE\"\n}" },
-            "url": "{{baseUrl}}/api/admin/users/{{userId}}/status"
-          }
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cartIds\":[4],\"addressId\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/orders",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "空购物车创建订单",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cartIds\":[],\"addressId\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/orders",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "分页查询自己的订单",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders?page=1&size=10",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "查询自己的订单详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "取消待支付订单",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/8",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "支付待支付订单",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/9/pay",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "9",
+                "pay"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "重复支付已支付订单",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/9/pay",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "9",
+                "pay"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "确认已发货订单收货",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/6/confirm-receipt",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "6",
+                "confirm-receipt"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "统计",
+      "name": "后台",
       "item": [
-        { "name": "当前角色统计", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }], "url": "{{baseUrl}}/api/statistics" } }
+        {
+          "name": "按订单号、用户名和状态组合查询",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/admin/orders?orderNo=O20260715150822659158A577&username=user&status=PAID&page=1&size=10",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "orderNo",
+                  "value": "O20260715150822659158A577",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "user",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "PAID",
+                  "type": "text"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "管理员查询订单详情",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/admin/orders/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "管理员给已支付订单发货",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"shippingCompany\":\"顺丰速运\",\"trackingNumber\":\"SF1000000002\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/orders/2/ship",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "2",
+                "ship"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "未支付订单直接发货",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"shippingCompany\":\"顺丰速运\",\"trackingNumber\":\"SF1000000001\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/orders/10/ship",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "10",
+                "ship"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "分页查询普通用户",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/admin/users?page=1&size=10",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "禁用普通用户",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{atoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"DISABLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/admin/users/5/status",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users",
+                "5",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
       ]
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\":\"ywy\",\r\n    \"password\":\"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/login",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\":\"ywd\",\r\n    \"password\":\"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/login",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

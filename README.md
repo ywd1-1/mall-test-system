@@ -171,7 +171,14 @@ docker compose up -d --build
 - V2 需求：[docs/测试需求分析.md](docs/测试需求分析.md)
 - 测试点：[docs/测试点分析.md](docs/测试点分析.md)
 - 测试计划：[docs/测试计划.md](docs/测试计划.md)
-- Postman：[docs/postman_collection.json](docs/postman_collection.json)
-- Bug 报告和测试总结文件均为待填写模板，不包含虚构执行数据。
+- 功能测试用例：[docs/电商订单管理系统测试用例.xlsx](docs/电商订单管理系统测试用例.xlsx)
+- 接口测试用例：[docs/接口测试用例.xlsx](docs/接口测试用例.xlsx)
+- 缺陷记录：[docs/缺陷用例.xlsx](docs/缺陷用例.xlsx)
+- Postman Collection：[docs/postman_collection.json](docs/postman_collection.json)
+- Postman Environment：[docs/postman_environment.json](docs/postman_environment.json)
+- Newman HTML 报告：[docs/newman-report.html](docs/newman-report.html)
+- 测试总结：[docs/测试总结报告.md](docs/测试总结报告.md)
+
+本轮共执行 116 条功能测试用例和 49 条接口测试用例，最终均通过；累计发现 2 个高优先级缺陷，均已修复并完成回归。Newman 批量执行 52 个请求项和 13 条核心断言，最终失败数为 0。详细统计、风险和结论以测试总结报告为准。
 
 后端可运行 `mvn test` 验证重复取消库存只恢复一次、已取消订单不能支付等规则；是否通过应以本机实际命令输出为准。
