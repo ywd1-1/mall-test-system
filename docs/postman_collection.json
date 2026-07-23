@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "9b62571c-c587-4458-bcf8-d70640cef96c",
+    "_postman_id": "9680b12a-db77-4887-9aa3-d02522fe65b8",
     "name": "电商订单管理系统",
     "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56405643",
-    "_collection_link": "https://go.postman.co/collection/56405643-9b62571c-c587-4458-bcf8-d70640cef96c?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/56405643-9680b12a-db77-4887-9aa3-d02522fe65b8?source=collection_link"
   },
   "item": [
     {
@@ -392,6 +392,14 @@
                   "        return product.status === \"ON_SALE\";\r",
                   "    });\r",
                   "    pm.expect(allOnSale).to.be.true;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"保存可购买商品ID\", function () {\r",
+                  "    const product = res.data.records.find(function (item) {\r",
+                  "        return item.status === \"ON_SALE\" && item.stock >= 2;\r",
+                  "    });\r",
+                  "    pm.expect(product, \"没有找到库存不少于2的在售商品\").to.exist;\r",
+                  "    pm.environment.set(\"saleProductId\", product.id);\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -574,6 +582,26 @@
         },
         {
           "name": "新增一件正常商品",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"新增商品成功并保存ID\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.environment.set(\"newProductId\", res.data.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -729,7 +757,7 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/admin/products/14",
+              "raw": "{{url}}/api/admin/products/{{newProductId}}",
               "host": [
                 "{{url}}"
               ],
@@ -737,7 +765,7 @@
                 "api",
                 "admin",
                 "products",
-                "14"
+                "{{newProductId}}"
               ]
             }
           },
@@ -756,7 +784,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"stock\":0}",
+              "raw": "{\"status\":\"OFF_SHELF\"}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -764,7 +792,7 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/admin/products/14/stock",
+              "raw": "{{url}}/api/admin/products/{{newProductId}}/status",
               "host": [
                 "{{url}}"
               ],
@@ -772,8 +800,8 @@
                 "api",
                 "admin",
                 "products",
-                "14",
-                "stock"
+                "{{newProductId}}",
+                "status"
               ]
             }
           },
@@ -800,7 +828,7 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/admin/products/14/stock",
+              "raw": "{{url}}/api/admin/products/{{newProductId}}/stock",
               "host": [
                 "{{url}}"
               ],
@@ -808,7 +836,7 @@
                 "api",
                 "admin",
                 "products",
-                "14",
+                "{{newProductId}}",
                 "stock"
               ]
             }
@@ -831,7 +859,7 @@
               "raw": "{\"name\":\"接口测试商品-修改\",\"price\":109.9,\"stock\":20,\"category\":\"配件\",\"status\":\"ON_SALE\"}"
             },
             "url": {
-              "raw": "{{url}}/api/admin/products/15",
+              "raw": "{{url}}/api/admin/products/{{newProductId}}",
               "host": [
                 "{{url}}"
               ],
@@ -839,7 +867,7 @@
                 "api",
                 "admin",
                 "products",
-                "15"
+                "{{newProductId}}"
               ]
             }
           },
@@ -876,6 +904,26 @@
         },
         {
           "name": "新增第一条地址时不勾选默认",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"新增地址成功并保存ID\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.environment.set(\"addressId\", res.data.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -928,14 +976,14 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/addresses/2",
+              "raw": "{{url}}/api/addresses/{{addressId}}",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "addresses",
-                "2"
+                "{{addressId}}"
               ]
             }
           },
@@ -976,7 +1024,7 @@
           "response": []
         },
         {
-          "name": "将地址 2 设为默认地址",
+          "name": "将新增地址设为默认地址",
           "request": {
             "method": "PUT",
             "header": [
@@ -991,14 +1039,14 @@
               "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}"
             },
             "url": {
-              "raw": "{{url}}/api/addresses/2/default",
+              "raw": "{{url}}/api/addresses/{{addressId}}/default",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "addresses",
-                "2",
+                "{{addressId}}",
                 "default"
               ]
             }
@@ -1021,14 +1069,14 @@
               "raw": "{\"recipientName\":\"备用收货人\",\"phone\":\"13900000002\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"福田区\",\"detailAddress\":\"测试路 100 号\",\"isDefault\":false}"
             },
             "url": {
-              "raw": "{{url}}/api/addresses/2",
+              "raw": "{{url}}/api/addresses/{{addressId}}",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "addresses",
-                "2"
+                "{{addressId}}"
               ]
             }
           },
@@ -1080,7 +1128,8 @@
                   "pm.test(\"加入购物车成功\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
                   "    pm.expect(res.code).to.eql(200);\r",
-                  " \r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.environment.set(\"cartId\", res.data.id);\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -1100,7 +1149,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"productId\":1,\"quantity\":1}",
+              "raw": "{\"productId\":{{saleProductId}},\"quantity\":1}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1283,14 +1332,14 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/cart/3",
+              "raw": "{{url}}/api/cart/{{cartId}}",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "cart",
-                "3"
+                "{{cartId}}"
               ]
             }
           },
@@ -1308,14 +1357,14 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/cart/3",
+              "raw": "{{url}}/api/cart/{{cartId}}",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "cart",
-                "3"
+                "{{cartId}}"
               ]
             }
           },
@@ -1327,13 +1376,20 @@
       "name": "订单",
       "item": [
         {
-          "name": "选择购物车商品创建订单",
+          "name": "为创建订单新增收货地址",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  ""
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"订单地址准备成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.environment.set(\"orderAddressId\", res.data.id);\r",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -1352,7 +1408,116 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"cartIds\":[4],\"addressId\":1}",
+              "raw": "{\"recipientName\":\"订单收货人\",\"phone\":\"13800000009\",\"province\":\"广东省\",\"city\":\"深圳市\",\"district\":\"南山区\",\"detailAddress\":\"自动化测试路 9 号\",\"isDefault\":false}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/addresses",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "为创建订单加入购物车",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"订单购物车准备成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.environment.set(\"orderCartId\", res.data.id);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\":{{saleProductId}},\"quantity\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/api/cart",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "选择购物车商品创建订单",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"创建订单成功并保存订单信息\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.exist;\r",
+                  "    pm.expect(res.data.orderNo).to.be.a(\"string\").and.not.empty;\r",
+                  "    pm.expect(res.data.status).to.eql(\"CREATED\");\r",
+                  "    pm.environment.set(\"orderId\", res.data.id);\r",
+                  "    pm.environment.set(\"orderNo\", res.data.orderNo);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"cartIds\":[{{orderCartId}}],\"addressId\":{{orderAddressId}}}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1385,7 +1550,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"cartIds\":[],\"addressId\":1}",
+              "raw": "{\"cartIds\":[],\"addressId\":{{orderAddressId}}}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1453,14 +1618,14 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/orders/1",
+              "raw": "{{url}}/api/orders/{{orderId}}",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "orders",
-                "1"
+                "{{orderId}}"
               ],
               "query": [
                 {
@@ -1511,14 +1676,14 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/orders/9/pay",
+              "raw": "{{url}}/api/orders/{{orderId}}/pay",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "orders",
-                "9",
+                "{{orderId}}",
                 "pay"
               ]
             }
@@ -1537,41 +1702,15 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/orders/9/pay",
+              "raw": "{{url}}/api/orders/{{orderId}}/pay",
               "host": [
                 "{{url}}"
               ],
               "path": [
                 "api",
                 "orders",
-                "9",
+                "{{orderId}}",
                 "pay"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "确认已发货订单收货",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{utoken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/api/orders/6/confirm-receipt",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "api",
-                "orders",
-                "6",
-                "confirm-receipt"
               ]
             }
           },
@@ -1594,7 +1733,7 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/admin/orders?orderNo=O20260715150822659158A577&username=user&status=PAID&page=1&size=10",
+              "raw": "{{url}}/api/admin/orders?orderNo={{orderNo}}&username=user&status=PAID&page=1&size=10",
               "host": [
                 "{{url}}"
               ],
@@ -1606,7 +1745,7 @@
               "query": [
                 {
                   "key": "orderNo",
-                  "value": "O20260715150822659158A577",
+                  "value": "{{orderNo}}",
                   "type": "text"
                 },
                 {
@@ -1646,7 +1785,7 @@
               }
             ],
             "url": {
-              "raw": "{{url}}/api/admin/orders/2",
+              "raw": "{{url}}/api/admin/orders/{{orderId}}",
               "host": [
                 "{{url}}"
               ],
@@ -1654,7 +1793,7 @@
                 "api",
                 "admin",
                 "orders",
-                "2"
+                "{{orderId}}"
               ]
             }
           },
@@ -1662,6 +1801,26 @@
         },
         {
           "name": "管理员给已支付订单发货",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"管理员发货成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.eql(Number(pm.environment.get(\"orderId\")));\r",
+                  "    pm.expect(res.data.status).to.eql(\"SHIPPED\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -1681,7 +1840,7 @@
               }
             },
             "url": {
-              "raw": "{{url}}/api/admin/orders/2/ship",
+              "raw": "{{url}}/api/admin/orders/{{orderId}}/ship",
               "host": [
                 "{{url}}"
               ],
@@ -1689,8 +1848,54 @@
                 "api",
                 "admin",
                 "orders",
-                "2",
+                "{{orderId}}",
                 "ship"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "用户确认本次订单收货",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"确认收货成功\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    pm.expect(res.code).to.eql(200);\r",
+                  "    pm.expect(res.data.id).to.eql(Number(pm.environment.get(\"orderId\")));\r",
+                  "    pm.expect(res.data.status).to.eql(\"COMPLETED\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{utoken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/api/orders/{{orderId}}/confirm-receipt",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "confirm-receipt"
               ]
             }
           },
