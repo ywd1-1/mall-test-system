@@ -175,6 +175,8 @@ docker compose up -d --build
 - Postman Collection：[docs/postman_collection.json](docs/postman_collection.json)
 - Postman Environment：[docs/postman_environment.json](docs/postman_environment.json)
 - Newman HTML 报告：[docs/newman-report.html](docs/newman-report.html)
+- JMeter 两用户并发下单脚本：[docs/并发测试.jmx](docs/并发测试.jmx)
+- JMeter CSV 参数文件：[docs/信息.csv](docs/信息.csv)
 - 测试总结：[docs/测试总结报告.md](docs/测试总结报告.md)
 
 本轮共执行 116 条功能测试用例和 49 条接口测试用例，最终均通过；累计发现 2 个高优先级缺陷，均已修复并完成回归。Newman 批量执行 54 个请求项和 21 条核心断言，最终失败数为 0。详细统计、风险和结论以测试总结报告为准。
