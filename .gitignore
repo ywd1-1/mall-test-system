@@ -4,6 +4,12 @@ dist/
 target/
 .vite/
 .pnpm-store/
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+reports/
 
 # Local runtime data and logs
 .workbench/

@@ -177,8 +177,16 @@ docker compose up -d --build
 - Newman HTML 报告：[docs/newman-report.html](docs/newman-report.html)
 - JMeter 两用户并发下单脚本：[docs/并发测试.jmx](docs/并发测试.jmx)
 - JMeter CSV 参数文件：[docs/信息.csv](docs/信息.csv)
+- pytest 接口自动化：[api-tests](api-tests)
 - 测试总结：[docs/测试总结报告.md](docs/测试总结报告.md)
 
 本轮共执行 116 条功能测试用例和 49 条接口测试用例，最终均通过；累计发现 2 个高优先级缺陷，均已修复并完成回归。Newman 批量执行 54 个请求项和 21 条核心断言，最终失败数为 0。详细统计、风险和结论以测试总结报告为准。
+
+pytest 接口自动化目前包含登录、商品、购物车和订单查询共 11 条用例。进入 `api-tests` 安装依赖后可执行：
+
+```bash
+pip install -r requirements.txt
+pytest -v
+```
 
 后端可运行 `mvn test` 验证重复取消库存只恢复一次、已取消订单不能支付等规则；是否通过应以本机实际命令输出为准。
