@@ -21,6 +21,8 @@ import java.util.List;
 
 @Service
 public class ProductService {
+    private static final String DEFAULT_PRODUCT_IMAGE_URL = "/product-images/test-product.webp";
+
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
 
@@ -124,7 +126,10 @@ public class ProductService {
         product.setStock(toStock(request.getStock()));
         product.setCategory(normalizeCategory(request.getCategory()));
         product.setStatus(normalizeStatus(request.getStatus()));
-        product.setImageUrl(request.getImageUrl() == null ? null : request.getImageUrl().trim());
+        String imageUrl = request.getImageUrl();
+        product.setImageUrl(imageUrl == null || imageUrl.trim().isEmpty()
+                ? DEFAULT_PRODUCT_IMAGE_URL
+                : imageUrl.trim());
         product.setDescription(request.getDescription() == null ? null : request.getDescription().trim());
     }
 

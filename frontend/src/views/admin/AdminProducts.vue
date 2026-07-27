@@ -252,7 +252,7 @@ function defaultForm() {
     price: 1,
     stock: 0,
     status: 'ON_SALE',
-    imageUrl: 'https://picsum.photos/seed/new-product/480/320',
+    imageUrl: '/product-images/test-product.webp',
     description: ''
   }
 }

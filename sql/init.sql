@@ -149,19 +149,19 @@ INSERT INTO user_address
 
 INSERT INTO product
 (id, name, price, stock, category, status, image_url, description, deleted, deleted_at, created_at, updated_at) VALUES
-(1, '智能手机 X1', 2999.00, 35, '手机', 'ON_SALE', 'https://picsum.photos/seed/mall-phone-x1/480/320', '正常库存商品，用于常规下单和支付流程。', 0, NULL, NOW(), NOW()),
-(2, '轻薄笔记本 Pro', 6299.00, 5, '电脑', 'ON_SALE', 'https://picsum.photos/seed/mall-laptop-pro/480/320', '低库存样本，用于库存边界和并发下单测试。', 0, NULL, NOW(), NOW()),
-(3, '无线蓝牙耳机', 199.00, 80, '配件', 'ON_SALE', 'https://picsum.photos/seed/mall-earphone/480/320', '正常库存配件。', 0, NULL, NOW(), NOW()),
-(4, '机械键盘 K87', 299.00, 0, '配件', 'ON_SALE', 'https://picsum.photos/seed/mall-keyboard/480/320', '零库存样本，用于库存不足测试。', 0, NULL, NOW(), NOW()),
-(5, '27 英寸显示器', 1299.00, 8, '电脑', 'ON_SALE', 'https://picsum.photos/seed/mall-monitor/480/320', '低库存显示器。', 0, NULL, NOW(), NOW()),
-(6, 'USB-C 扩展坞', 189.00, 55, '配件', 'ON_SALE', 'https://picsum.photos/seed/mall-dock/480/320', '正常库存扩展坞。', 0, NULL, NOW(), NOW()),
-(7, '手机保护壳', 39.00, 2, '手机', 'ON_SALE', 'https://picsum.photos/seed/mall-phone-case/480/320', '极低库存边界样本。', 0, NULL, NOW(), NOW()),
-(8, '办公人体工学椅', 899.00, 20, '生活用品', 'ON_SALE', 'https://picsum.photos/seed/mall-chair/480/320', '正常上架商品。', 0, NULL, NOW(), NOW()),
-(9, '不锈钢保温杯', 79.00, 6, '生活用品', 'ON_SALE', 'https://picsum.photos/seed/mall-cup/480/320', '低库存生活用品。', 0, NULL, NOW(), NOW()),
-(10, '移动固态硬盘 1TB', 499.00, 60, '电脑', 'ON_SALE', 'https://picsum.photos/seed/mall-ssd/480/320', '正常库存电脑配件。', 0, NULL, NOW(), NOW()),
-(11, '智能手环', 159.00, 100, '手机', 'ON_SALE', 'https://picsum.photos/seed/mall-band/480/320', '高库存商品。', 0, NULL, NOW(), NOW()),
-(12, '下架测试配件', 59.00, 15, '配件', 'OFF_SHELF', 'https://picsum.photos/seed/mall-off-shelf/480/320', '管理员可见、普通用户不可见的下架商品。', 0, NULL, NOW(), NOW()),
-(13, '软删除测试商品', 99.00, 10, '配件', 'OFF_SHELF', 'https://picsum.photos/seed/mall-deleted/480/320', '默认前后台列表均不可见，且不能再次上架。', 1, NOW(), NOW(), NOW());
+(1, '智能手机 X1', 2999.00, 35, '手机', 'ON_SALE', '/product-images/phone-x1.webp', '正常库存商品，用于常规下单和支付流程。', 0, NULL, NOW(), NOW()),
+(2, '轻薄笔记本 Pro', 6299.00, 5, '电脑', 'ON_SALE', '/product-images/laptop-pro.webp', '低库存样本，用于库存边界和并发下单测试。', 0, NULL, NOW(), NOW()),
+(3, '无线蓝牙耳机', 199.00, 80, '配件', 'ON_SALE', '/product-images/wireless-earbuds.webp', '正常库存配件。', 0, NULL, NOW(), NOW()),
+(4, '机械键盘 K87', 299.00, 0, '配件', 'ON_SALE', '/product-images/keyboard-k87.webp', '零库存样本，用于库存不足测试。', 0, NULL, NOW(), NOW()),
+(5, '27 英寸显示器', 1299.00, 8, '电脑', 'ON_SALE', '/product-images/monitor-27.webp', '低库存显示器。', 0, NULL, NOW(), NOW()),
+(6, 'USB-C 扩展坞', 189.00, 55, '配件', 'ON_SALE', '/product-images/usb-c-dock.webp', '正常库存扩展坞。', 0, NULL, NOW(), NOW()),
+(7, '手机保护壳', 39.00, 2, '手机', 'ON_SALE', '/product-images/phone-case.webp', '极低库存边界样本。', 0, NULL, NOW(), NOW()),
+(8, '办公人体工学椅', 899.00, 20, '生活用品', 'ON_SALE', '/product-images/ergonomic-chair.webp', '正常上架商品。', 0, NULL, NOW(), NOW()),
+(9, '不锈钢保温杯', 79.00, 6, '生活用品', 'ON_SALE', '/product-images/insulated-bottle.webp', '低库存生活用品。', 0, NULL, NOW(), NOW()),
+(10, '移动固态硬盘 1TB', 499.00, 60, '电脑', 'ON_SALE', '/product-images/portable-ssd-1tb.webp', '正常库存电脑配件。', 0, NULL, NOW(), NOW()),
+(11, '智能手环', 159.00, 100, '手机', 'ON_SALE', '/product-images/smart-band.webp', '高库存商品。', 0, NULL, NOW(), NOW()),
+(12, '下架测试配件', 59.00, 15, '配件', 'OFF_SHELF', '/product-images/test-product.webp', '管理员可见、普通用户不可见的下架商品。', 0, NULL, NOW(), NOW()),
+(13, '软删除测试商品', 99.00, 10, '配件', 'OFF_SHELF', '/product-images/test-product.webp', '默认前后台列表均不可见，且不能再次上架。', 1, NOW(), NOW(), NOW());
 
 INSERT INTO orders
 (id, order_no, user_id, status, total_amount, address_id, recipient_name, recipient_phone,
@@ -174,11 +174,11 @@ INSERT INTO orders
 
 INSERT INTO order_item
 (id, order_id, product_id, product_name, product_image_url, price, quantity, subtotal) VALUES
-(1, 1, 1, '智能手机 X1', 'https://picsum.photos/seed/mall-phone-x1/480/320', 2999.00, 1, 2999.00),
-(2, 2, 3, '无线蓝牙耳机', 'https://picsum.photos/seed/mall-earphone/480/320', 199.00, 1, 199.00),
-(3, 3, 6, 'USB-C 扩展坞', 'https://picsum.photos/seed/mall-dock/480/320', 189.00, 1, 189.00),
-(4, 4, 9, '不锈钢保温杯', 'https://picsum.photos/seed/mall-cup/480/320', 79.00, 1, 79.00),
-(5, 5, 7, '手机保护壳', 'https://picsum.photos/seed/mall-phone-case/480/320', 39.00, 1, 39.00);
+(1, 1, 1, '智能手机 X1', '/product-images/phone-x1.webp', 2999.00, 1, 2999.00),
+(2, 2, 3, '无线蓝牙耳机', '/product-images/wireless-earbuds.webp', 199.00, 1, 199.00),
+(3, 3, 6, 'USB-C 扩展坞', '/product-images/usb-c-dock.webp', 189.00, 1, 189.00),
+(4, 4, 9, '不锈钢保温杯', '/product-images/insulated-bottle.webp', 79.00, 1, 79.00),
+(5, 5, 7, '手机保护壳', '/product-images/phone-case.webp', 39.00, 1, 39.00);
 
 INSERT INTO order_status_log
 (order_id, old_status, new_status, operator_id, operator_name, operator_role, operated_at, remark) VALUES
