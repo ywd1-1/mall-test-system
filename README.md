@@ -85,79 +85,19 @@ docker compose up -d --build
 
 非法参数和 JSON 返回 400，未登录返回 401，无权限返回 403，资源或接口不存在返回 404。token 保存在后端内存中，服务重启后需要重新登录。
 
-## 接口清单
+## 核心接口
 
-### 认证与用户
-
-| 方法 | 路径 | 说明 |
+| 业务场景 | 核心接口 | 说明 |
 | --- | --- | --- |
-| POST | `/api/login` | 登录，禁用用户不能登录 |
-| POST | `/api/register` | 注册普通用户 |
-| GET | `/api/user/current` | 当前用户 |
-| GET | `/api/admin/users?username=&status=&page=1&size=10` | 管理员分页查询普通用户 |
-| PUT | `/api/admin/users/{id}/status` | 启用或禁用普通用户 |
+| 登录与注册 | `POST /api/login`、`POST /api/register` | Token 鉴权与禁用账号校验 |
+| 商品浏览 | `GET /api/products` | 关键词、分类与分页查询 |
+| 购物车 | `/api/cart` | 商品添加、数量修改与删除 |
+| 收货地址 | `/api/addresses` | 地址管理与唯一默认地址 |
+| 用户订单 | `POST /api/orders`、`POST /api/orders/{id}/pay`、`DELETE /api/orders/{id}` | 创建、支付与取消订单 |
+| 订单履约 | `POST /api/admin/orders/{id}/ship`、`POST /api/orders/{id}/confirm-receipt` | 管理员发货与用户确认收货 |
+| 管理查询 | `GET /api/admin/orders`、`GET /api/statistics` | 订单组合查询与数据统计 |
 
-### 收货地址
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| GET | `/api/addresses` | 查询当前用户地址 |
-| POST | `/api/addresses` | 新增地址 |
-| PUT | `/api/addresses/{id}` | 修改自己的地址 |
-| DELETE | `/api/addresses/{id}` | 删除自己的地址 |
-| PUT | `/api/addresses/{id}/default` | 设置唯一默认地址 |
-
-### 商品与购物车
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| GET | `/api/products?keyword=&category=&page=1&size=8` | 可售商品分页 |
-| GET | `/api/products/{id}` | 可售商品详情 |
-| GET | `/api/admin/products?keyword=&category=&status=&page=1&size=8` | 管理员商品分页，默认排除软删除商品 |
-| POST | `/api/admin/products` | 新增商品 |
-| PUT | `/api/admin/products/{id}` | 修改商品 |
-| PUT | `/api/admin/products/{id}/status` | 上下架 |
-| PUT | `/api/admin/products/{id}/stock` | 修改库存 |
-| DELETE | `/api/admin/products/{id}` | 软删除，删除后不能再次上架 |
-| GET | `/api/cart` | 查询购物车 |
-| POST | `/api/cart` | 添加购物车 |
-| PUT | `/api/cart/{id}` | 修改数量 |
-| DELETE | `/api/cart/{id}` | 删除购物车条目 |
-
-### 订单与统计
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| POST | `/api/orders` | 创建订单，必须传 `addressId` 和非空 `cartIds` |
-| GET | `/api/orders?status=&page=1&size=10` | 当前用户订单分页 |
-| GET | `/api/orders/{id}` | 用户订单详情、地址快照和时间线 |
-| POST | `/api/orders/{id}/pay` | 支付待支付订单 |
-| DELETE | `/api/orders/{id}` | 取消待支付订单并恢复一次库存 |
-| POST | `/api/orders/{id}/confirm-receipt` | 所属用户确认已发货订单收货 |
-| GET | `/api/admin/orders?orderNo=&username=&status=&startTime=&endTime=&page=1&size=10` | 管理员组合查询订单 |
-| GET | `/api/admin/orders/{id}` | 管理员订单详情 |
-| POST | `/api/admin/orders/{id}/ship` | 管理员发货 |
-| GET | `/api/statistics` | 当前角色可见范围内的统计数据 |
-
-创建订单示例：
-
-```json
-{
-  "cartIds": [1, 2],
-  "addressId": 1
-}
-```
-
-发货示例：
-
-```json
-{
-  "shippingCompany": "顺丰速运",
-  "trackingNumber": "SF1000000001"
-}
-```
-
-时间参数使用 ISO 本地日期时间，例如 `2026-07-01T00:00:00`。
+完整接口、请求参数和响应模型可在后端启动后访问 Swagger UI：`http://localhost:8080/swagger-ui.html`。批量回归资料见 [Postman Collection](docs/postman_collection.json) 和 [Postman Environment](docs/postman_environment.json)。
 
 ## 核心规则
 
