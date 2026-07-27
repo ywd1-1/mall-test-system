@@ -26,8 +26,6 @@
 
 ## 启动
 
-Windows 本地启动：双击根目录的 `start-project.bat`。脚本会检查 MySQL `3308`、启动 Spring Boot `8080` 和 Vue/Vite `5173`；首次运行缺少前端依赖时会自动执行 `pnpm install`。
-
 Docker 一键启动：
 
 ```bash
@@ -38,24 +36,6 @@ docker compose up -d --build
 ```
 
 云服务器只需公开 `80`；MySQL `3306` 和后端 `8080` 默认只绑定服务器本机。完整步骤见 [deploy/部署说明.md](deploy/部署说明.md)。
-
-本地开发需要 Java 8、Maven、Node.js、pnpm 和 MySQL 8.0。先准备 `mall_test_system` 数据库并执行 `sql/init.sql`，再启动前后端：
-
-```bash
-cd backend
-mvn spring-boot:run
-
-cd ../frontend
-pnpm install
-pnpm dev
-```
-
-访问地址：
-
-- 前端：`http://localhost:5173`
-- 后端：`http://localhost:8080`
-- Swagger：`http://localhost:8080/swagger-ui.html`
-- OpenAPI JSON：`http://localhost:8080/v3/api-docs`
 
 MySQL 首次启动会执行 [sql/init.sql](sql/init.sql)。已有 Docker 数据卷不会自动重放脚本；测试环境重置数据前请确认没有需要保留的数据，再执行：
 
