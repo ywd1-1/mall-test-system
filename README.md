@@ -8,6 +8,7 @@
 | --- | --- |
 | 功能测试 | 116 条用例，初测 114 条通过、2 条未通过；修复后回归通过 |
 | 接口测试 | 49 条用例，全部通过 |
+| pytest / Allure 回归 | 17 条测试实例全部通过，通过率 100% |
 | Postman / Newman 回归 | 54 个请求项、21 条核心断言，失败数 0 |
 | JMeter 并发验证 | 两个用户同时购买库存为 1 的商品，未发生超卖 |
 | 缺陷回归 | 2 个高优先级缺陷均已修复并通过回归 |
@@ -123,14 +124,15 @@ docker compose up -d --build
 - Newman HTML 报告：[docs/newman-report.html](docs/newman-report.html)
 - JMeter 两用户并发下单脚本：[docs/并发测试.jmx](docs/并发测试.jmx)
 - JMeter CSV 参数文件：[docs/信息.csv](docs/信息.csv)
-- pytest 接口自动化：[api-tests](api-tests)
+- pytest / Allure 接口自动化：[api-tests](api-tests)
 - 测试总结：[docs/测试总结报告.md](docs/测试总结报告.md)
 
-pytest 接口自动化目前包含登录、商品、购物车和订单共 17 条测试实例，覆盖参数化登录异常、Token 鉴权、动态 ID 关联、购物车数据清理，以及订单创建—查询—取消流程。支付、管理员发货和确认收货的完整状态流由 Postman/Newman 回归覆盖。进入 `api-tests` 安装依赖后可执行：
+pytest 接口自动化目前包含登录、商品、购物车和订单共 17 条测试实例，覆盖参数化登录异常、Token 鉴权、动态 ID 关联、购物车数据清理，以及订单创建—查询—取消流程。Allure 报告按四个业务模块展示中文用例名称、fixture 前后置和关键接口步骤；支付、管理员发货和确认收货的完整状态流由 Postman/Newman 回归覆盖。进入 `api-tests` 安装依赖后可执行：
 
 ```bash
 pip install -r requirements.txt
 pytest -v
+allure serve allure-results
 ```
 
 后端可运行 `mvn test` 验证重复取消库存只恢复一次、已取消订单不能支付等规则；是否通过应以本机实际命令输出为准。

@@ -1,3 +1,4 @@
+import allure
 import pytest
 import requests
 
@@ -9,6 +10,7 @@ timeout = 10
 
 
 #提取token
+@allure.step("获取登录 Token")
 def get_token():
     response = requests.post(
         base_url + "/login",
@@ -26,6 +28,7 @@ def get_token():
     return data["data"]["token"]
 
 #提取请求头
+@allure.step("生成携带 Token 的请求头")
 def get_headers():
     token = get_token()
 
@@ -35,6 +38,7 @@ def get_headers():
 
 
 #得到商品id
+@allure.step("选择库存充足且未加入购物车的商品")
 def get_product_id(headers):
     response = requests.get(
         base_url + "/cart",
