@@ -1,23 +1,24 @@
 # 电商订单管理系统接口自动化测试
 
-基于 `pytest + requests` 的接口自动化测试项目，用于验证登录、商品、购物车和订单查询的核心接口。
+基于 `pytest + requests` 的接口自动化测试，覆盖登录、商品、购物车和用户订单核心接口。当前共收集 17 条测试实例，2026-07-30 本地执行结果为 `17 passed`。
 
 ## 项目结构
 
 ```text
 api-tests/
 ├── test/
-│   ├── api.py                # 登录、token 和公共配置
-│   ├── test_auth.py          # 登录测试
-│   ├── test_products.py      # 商品查询测试
-│   ├── test_cart.py          # 购物车测试
-│   └── test_orders.py        # 订单查询测试
+│   ├── api.py                # 测试地址、账号、Token 和公共接口函数
+│   ├── conftest.py           # headers、product_id、address_id 公共 fixture
+│   ├── test_auth.py          # 登录及参数化异常场景
+│   ├── test_products.py      # 商品分页、详情和不存在场景
+│   ├── test_cart.py          # 购物车增查改删、鉴权和库存场景
+│   └── test_orders.py        # 创建、查询、取消和鉴权场景
 ├── .gitignore
 ├── pytest.ini
 └── requirements.txt
 ```
 
-测试地址、测试账号、密码和超时时间都写在 `test/api.py` 顶部，便于学习和调试。
+测试地址、测试账号、密码和超时时间位于 `test/api.py` 顶部。账号应为专用测试账号，避免与手工测试数据混用。
 
 ## 安装与运行
 
@@ -26,21 +27,25 @@ pip install -r requirements.txt
 pytest -v
 ```
 
-调试时显示接口输出：
+只运行某个模块：
 
 ```bash
-pytest -s -v
+pytest test/test_cart.py -v
+pytest test/test_orders.py -v
 ```
 
 ## 当前覆盖范围
 
-| 模块 | 场景 |
-| --- | --- |
-| 登录 | 正确账号密码、错误密码 |
-| 商品 | 分页查询、商品详情查询 |
-| 购物车 | 正常加购、无 token 加购、查询、修改数量、删除 |
-| 订单 | 查询订单、无 token 查询订单 |
+| 模块 | 测试实例 | 场景 |
+| --- | ---: | --- |
+| 登录 | 5 | 正常登录；错误用户名、错误密码、用户名为空、密码为空 |
+| 商品 | 3 | 分页查询、商品详情、不存在的商品 |
+| 购物车 | 6 | 正常加购、无 Token、查询、修改数量、删除、库存不足 |
+| 订单 | 3 | 无 Token 创建、创建—查询—取消、订单列表 |
+| 合计 | 17 | 正向、异常、鉴权、边界及接口关联 |
 
-购物车测试会创建临时购物车数据，并在成功后删除。测试账号应只用于自动化测试，避免与手工数据混用。
+登录异常场景使用 `@pytest.mark.parametrize` 生成四条测试实例。`headers` fixture 在测试会话中登录一次并复用 Token；`product_id` 和 `address_id` fixture 提供动态关联数据。
 
-下单、支付、发货等接口会永久生成业务记录，后续应在独立测试环境和专用测试账号中补充。
+购物车测试通过 `yield` fixture 在测试前创建临时数据，并在测试结束后自动删除。订单正向用例执行“加购—创建—查询—取消”，使用 `try...finally` 保证已创建订单能够取消并恢复库存。
+
+支付、管理员发货和确认收货会产生不可逆的订单状态记录，因此不放入默认 pytest 回归；完整订单状态流由 `docs/postman_collection.json` 和 Newman 回归覆盖。

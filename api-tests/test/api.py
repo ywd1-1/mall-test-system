@@ -1,3 +1,4 @@
+import pytest
 import requests
 
 
@@ -7,6 +8,7 @@ password = "123456"
 timeout = 10
 
 
+#提取token
 def get_token():
     response = requests.post(
         base_url + "/login",
@@ -23,10 +25,42 @@ def get_token():
 
     return data["data"]["token"]
 
-
+#提取请求头
 def get_headers():
     token = get_token()
 
     return {
         "Authorization": f"Bearer {token}"
     }
+
+
+#得到商品id
+def get_product_id(headers):
+    response = requests.get(
+        base_url + "/cart",
+        headers=headers,
+        timeout=timeout,
+    )
+    cart_data = response.json()
+    assert response.status_code == 200, response.text
+    assert cart_data["code"] == 200, cart_data
+
+    cart_product_ids = []
+    for item in cart_data["data"]:
+        cart_product_ids.append(item["productId"])
+
+    response = requests.get(
+        base_url + "/products",
+        params={"page": 1, "size": 100},
+        timeout=timeout,
+    )
+    product_data = response.json()
+
+    assert response.status_code == 200, response.text
+    assert product_data["code"] == 200, product_data
+
+    for product in product_data["data"]["records"]:
+        if product["id"] not in cart_product_ids and product["stock"] >= 2:
+            return product["id"]
+
+    assert False, "没有可用于购物车自动化测试的在售商品"

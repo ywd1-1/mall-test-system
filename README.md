@@ -126,7 +126,7 @@ docker compose up -d --build
 - pytest 接口自动化：[api-tests](api-tests)
 - 测试总结：[docs/测试总结报告.md](docs/测试总结报告.md)
 
-pytest 接口自动化目前包含登录、商品、购物车和订单查询共 11 条用例。进入 `api-tests` 安装依赖后可执行：
+pytest 接口自动化目前包含登录、商品、购物车和订单共 17 条测试实例，覆盖参数化登录异常、Token 鉴权、动态 ID 关联、购物车数据清理，以及订单创建—查询—取消流程。支付、管理员发货和确认收货的完整状态流由 Postman/Newman 回归覆盖。进入 `api-tests` 安装依赖后可执行：
 
 ```bash
 pip install -r requirements.txt
