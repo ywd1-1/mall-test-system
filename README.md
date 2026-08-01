@@ -127,6 +127,12 @@ jmeter -n -t docs/并发测试.jmx -Jaccounts_csv=docs/信息.csv
 
 ![商品列表查询的 JMeter 聚合报告](docs/images/jmeter-query-aggregate-report.png)
 
+### 低库存并发下单聚合报告
+
+![低库存并发下单的 JMeter 聚合报告](docs/images/jmeter-concurrent-order-aggregate-report.png)
+
+该场景中“并发购买”显示 `50%` 异常是预期结果：两个用户同时购买库存为 1 的商品时，应有一个订单成功、另一个因库存不足返回 `400`。聚合报告中的总异常率 `12.50%` 来自 8 个请求中的这一个预期业务失败，验证目标是库存不出现负数或超卖，而不是要求两个下单请求都成功。
+
 ## 核心规则
 
 - `CREATED` 可以支付或取消。
