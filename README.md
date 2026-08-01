@@ -119,6 +119,14 @@ jmeter -n -t docs/并发测试.jmx -Jaccounts_csv=docs/信息.csv
 
 先用“查看结果树”调试单次请求；正式压测时应禁用该监听器，主要通过“聚合报告”查看异常率、P95 和吞吐量。仅应在测试环境运行写入型并发下单场景。
 
+### JMeter 测试计划
+
+![JMeter 两用户并发下单与商品查询线程组](docs/images/jmeter-test-plan.png)
+
+### 商品列表查询聚合报告
+
+![商品列表查询的 JMeter 聚合报告](docs/images/jmeter-query-aggregate-report.png)
+
 ## 核心规则
 
 - `CREATED` 可以支付或取消。
